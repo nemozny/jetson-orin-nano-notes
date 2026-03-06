@@ -155,3 +155,18 @@ Pip seems to be installing incompatible pytorch. You need to uninstall it and in
 ```
 python3 -m pip install torch==2.8.0 torchvision==0.23.0 --index-url=https://pypi.jetson-ai-lab.io/jp6/cu126
 ```
+
+&nbsp;
+
+### Fix cudaMalloc out of memory issue
+There was a bug introduced in r36.4.7 that caused 
+```
+cudaMalloc failed: out of memory
+```
+errors when trying to load LLM models. For fix see - https://forums.developer.nvidia.com/t/jetpack-6-2-2-jetson-linux-36-5-is-now-live/359622
+Change etc/apt/sources.list.d/nvidia-l4t-apt-source.list from 36.4 to 36.5, then
+```
+sudo apt update
+sudo apt dist-upgrade
+```
+And reboot.
