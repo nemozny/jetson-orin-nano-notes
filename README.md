@@ -105,7 +105,7 @@ I noticed the build config produced directory called _UNKNOWN.egg-info_ - that d
 
 ### Python3.10
 I read on the internet that python3.10 might be a problem, that I may need python3.11. That was no problem, since you can happily install it with apt install.
-However the only python3-pip was associated with python3.10, as was seen from the compilation log.
+However the only python3-pip I had was associated with python3.10, as was seen from the compilation log.
 
 I have downloaded pip3 for python3.11 like this
 ```
@@ -129,4 +129,29 @@ cmake --build build --target clean
 ```
 ```
 CMAKE_ARGS="-DLLAMA_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=87" pip3 install -v .
+```
+
+I have a feeling the issue was with "venv", which was producing _UNKNOWN.egg-info_. 
+I had to exit venv to correctly produce _llama_cpp_binaries.egg-info_.
+
+&nbsp;
+
+### Using llama-cpp-binaries in venv
+If you managed to build and install _llama-cpp-binaries_, another problem is that you need to somehow make it available to venv environment in _text-generation-webui_, because you cannot very well build in venv itself.
+You can manage this by enabling system-site packages to venv.
+```
+deactivate
+rm -rf venv
+python3.11 -m venv venv --system-site-packages
+source venv/bin/activate
+python server.py --portable --api --auto-launch
+```
+
+
+&nbsp;
+
+### Pytorch
+Pip seems to be installing incompatible pytorch. You need to uninstall it and install from
+```
+python3 -m pip install torch==2.8.0 torchvision==0.23.0 --index-url=https://pypi.jetson-ai-lab.io/jp6/cu126
 ```
