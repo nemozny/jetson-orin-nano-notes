@@ -1,6 +1,10 @@
 # jetson-orin-nano-notes
 Jetson Orin Nano setup and notes
 
+## SSD Drive installation made easy
+No Ubuntu laptop needed.
+See - https://www.youtube.com/watch?v=497u-CcYvE8
+
 &nbsp;
 
 ## Remote desktop
@@ -153,8 +157,9 @@ python server.py --portable --api --auto-launch
 ### Pytorch
 Pip seems to be installing incompatible pytorch. You need to uninstall it and install from
 ```
-python3 -m pip install torch==2.8.0 torchvision==0.23.0 --index-url=https://pypi.jetson-ai-lab.io/jp6/cu126
+pip install torch torchvision --extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126
 ```
+Note: Changed "--index-url" to "--extra-index-url" and removed versions due to errors in venv.
 
 &nbsp;
 
