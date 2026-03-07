@@ -155,11 +155,14 @@ python server.py --portable --api --auto-launch
 &nbsp;
 
 ### Pytorch
-Pip seems to be installing incompatible pytorch. You need to uninstall it and install from
+Pip seems to be installing incompatible pytorch - with CPU support only and without CUDA. You need to uninstall it and install a proper version.
+
+See - https://pytorch.org/get-started/locally/
+
+Select _Stable - Linux - Pip - Python - CUDA 12.6_
 ```
-pip install torch torchvision --extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 ```
-Note: Changed "--index-url" to "--extra-index-url" and removed versions due to errors in venv.
 
 &nbsp;
 
@@ -168,7 +171,7 @@ There was a bug introduced in r36.4.7 that caused
 ```
 cudaMalloc failed: out of memory
 ```
-errors when trying to load LLM models. For fix see - https://forums.developer.nvidia.com/t/jetpack-6-2-2-jetson-linux-36-5-is-now-live/359622
+errors when trying to load LLM models. For a fix see - https://forums.developer.nvidia.com/t/jetpack-6-2-2-jetson-linux-36-5-is-now-live/359622
 Change etc/apt/sources.list.d/nvidia-l4t-apt-source.list from 36.4 to 36.5, then
 ```
 sudo apt update
