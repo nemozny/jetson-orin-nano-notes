@@ -46,7 +46,7 @@ Loading any model based on Llama ended up in error
 ModuleNotFoundError: No module named 'llama_cpp_binaries'
 ```
 
-One problem was that https://github.com/oobabooga/text-generation-webui installer (any of them) does NOT support aarch64, the _requirements/full/requirements.txt_ only contain for selected platforms:
+One problem was that https://github.com/oobabooga/text-generation-webui installer (any of them) does NOT support aarch64, the _requirements/full/requirements.txt_ only contain for wheels selected platforms:
 ```
 # CUDA wheels
 https://github.com/oobabooga/llama-cpp-binaries/releases/download/v0.74.0/llama_cpp_binaries-0.74.0+cu124-py3-none-win_amd64.whl; platform_system == "Windows"
@@ -70,11 +70,11 @@ nvcc -V
 Needs to tell you a version.
 
 ### llama-cpp-binaries
-Installation guide in the (README)[https://github.com/oobabooga/llama-cpp-binaries/tree/master] does not work, since running
+Installation guide in https://github.com/oobabooga/llama-cpp-binaries/tree/master did not work, since running
 ```
 git clone --recurse-submodules https://github.com/oobabooga/llama-cpp-binaries
 ```
-will end up in a failure.
+ended up in a failure.
 Do a regular clone instead
 ```
 git clone https://github.com/oobabooga/llama-cpp-binaries
