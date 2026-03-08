@@ -60,32 +60,39 @@ https://github.com/kingbri1/flash-attention/releases/download/v2.8.3/flash_attn-
 https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.7cxx11abiFALSE-cp311-cp311-linux_x86_64.whl; platform_system == "Linux" and platform_machine == "x86_64" and python_version == "3.11"
 ```
 
-You have to compile llama-cpp-binaries yourself for Jetson.
+You have to compile llama-cpp-binaries for Jetson yourself.
+
+&nbsp;
 
 ### nvcc
-First make sure you have NVIDIA CUDA compiler installed, which was not my case due to some funny business I did.
+First make sure you have NVIDIA CUDA compiler installed.
 ```
 nvcc -V
 ```
 Needs to tell you a version.
+Otherwise look it up and install.
 
-### llama-cpp-binaries
-Installation guide in https://github.com/oobabooga/llama-cpp-binaries/tree/master did not work, since running
+&nbsp;
+
+### Download llama-cpp-binaries sources
+Installation guide in https://github.com/oobabooga/llama-cpp-binaries/tree/master did not work, since running the first git clone
 ```
 git clone --recurse-submodules https://github.com/oobabooga/llama-cpp-binaries
 ```
-ended up in a failure.
+for me ended up in a failure on those "--recurse-submodules". It is caused by "llama.cpp" being a subrepository of "llama-cpp-binaries" repository.
+
 Do a regular clone instead
 ```
 git clone https://github.com/oobabooga/llama-cpp-binaries
 ```
-then change to the cloned directory and clone *llama.cpp* again.
+then change to the cloned directory and clone *llama.cpp* repository again.
 ```
 cd llama-cpp-binaries
 git clone https://github.com/ggml-org/llama.cpp.git
 ```
 
-You can compile llama itself for Jetson like this (you probably don't need to)
+#### Optionally compile llama.cpp
+You can compile "llama.cpp" independently of "llama-cpp-binaries" for Jetson, but there is no benefit for our purpose.
 ```
 git clone https://github.com/ggml-org/llama.cpp
 cd llama.cpp && cmake -B build \
@@ -97,46 +104,39 @@ cd llama.cpp && cmake -B build \
 cmake --build build --config Release --parallel 8
 ```
 
+### Compile llama-cpp-binaries
 The tricky part was to figure out "appropriate flag for your GPU" for llama-cpp-binaries as per https://github.com/oobabooga/llama-cpp-binaries/tree/master. The correct flag was
 ```
 CMAKE_ARGS="-DLLAMA_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=87" pip3 install -v .
 ```
 
-However all attempts to compile llama binaries always only ended up in an error, breaking randomly between 20% and 40%.
-I noticed the build config produced directory called _UNKNOWN.egg-info_ - that didn't look right to me.
+However all attempts to compile llama binaries always only ended up in an error, breaking randomly between 20% and 40% on
+```
+CMAKE_BUILD_TYPE=Release
+c++: fatal error: Killed signal terminated program cc1plus
+compilation terminated.
+Killed
+Killed
+...
+... Error 137
+... Error 137
+```
+Error 137 is out of memory, the process was killed.
+*Do not do the mistake of interrupting the process! Wait until the process exits with error. The build can actually continue and build different parts of the library.
+After the process exited, start it again and eventually it should finish.*
 
-&nbsp;
-
-### Python3.10
-I read on the internet that python3.10 might be a problem, that I may need python3.11. That was no problem, since you can happily install it with apt install.
-However the only python3-pip I had was associated with python3.10, as was seen from the compilation log.
-
-I have downloaded pip3 for python3.11 like this
+If the process is stubborn and keeps breaking, you can try limiting parallelization:
 ```
-sudo apt install python3.11-distutils
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python3.11 get-pip.py
+export CMAKE_BUILD_PARALLEL_LEVEL=1
+export MAKEFLAGS="-j1"
+CMAKE_ARGS="-DLLAMA_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=87 -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" python3.10 -m pip install -v . --no-build-isolation --no-cache-dir
 ```
-You can then check the pip version
+Eventually it should finish with
 ```
-pip3 --version
+Successfully built llama_cpp_binaries
+Installing collected packages: llama_cpp_binaries
+Successfully installed llama_cpp_binaries-0.87.0
 ```
-or 
-```
-python3.11 -m pip --version
-```
-
-### Clean the build directory and try again
-```
-cd build && make clean
-cmake --build build --target clean
-```
-```
-CMAKE_ARGS="-DLLAMA_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=87" pip3 install -v .
-```
-
-I have a feeling the issue was with "venv", which was producing _UNKNOWN.egg-info_. 
-I had to exit venv to correctly produce _llama_cpp_binaries.egg-info_.
 
 &nbsp;
 
@@ -146,33 +146,32 @@ You can manage this by enabling system-site packages to venv.
 ```
 deactivate
 rm -rf venv
-python3.11 -m venv venv --system-site-packages
+python3.10 -m venv venv --system-site-packages
 source venv/bin/activate
-python server.py --portable --api --auto-launch
+pip install -r requirements/full/requirements.txt
+pip install matplotlib numpy scipy --upgrade
+python server.py --listen
 ```
 
 
 &nbsp;
 
 ### Pytorch
-Pip seems to be installing incompatible pytorch - with CPU support only and without CUDA. You need to uninstall it and install a proper version.
+Default Pip seems to be installing incompatible pytorch - with CPU support only and without CUDA. You need to uninstall it and install a proper version from Jetson repository.
 
-See - https://pytorch.org/get-started/locally/
-
-Select _Stable - Linux - Pip - Python - CUDA 12.6_
 ```
-pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+pip install torch torchvision flash-attn --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
 ```
 
 &nbsp;
 
 ### Fix cudaMalloc out of memory issue
-There was a bug introduced in r36.4.7 that caused 
+There was a bug introduced in Jetpack r36.4.7 that caused 
 ```
 cudaMalloc failed: out of memory
 ```
 errors when trying to load LLM models. For a fix see - https://forums.developer.nvidia.com/t/jetpack-6-2-2-jetson-linux-36-5-is-now-live/359622
-Change etc/apt/sources.list.d/nvidia-l4t-apt-source.list from 36.4 to 36.5, then
+The fix is by updating: Change etc/apt/sources.list.d/nvidia-l4t-apt-source.list from 36.4 to 36.5, then
 ```
 sudo apt update
 sudo apt dist-upgrade
