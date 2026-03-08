@@ -181,3 +181,41 @@ sudo apt update
 sudo apt dist-upgrade
 ```
 And reboot.
+
+&nbsp;
+
+### ComfyUI
+Works, but without some optimization, since Jetson Orin is cu126 and _"You need pytorch with cu130 or higher to use optimized CUDA operations."_
+So far I found that you can use models up to 4GB, but 6GB crashed on low memory.
+
+Notes
+1. I am using "uv" instead of "python -m venv" (you need to install uv first by "pip install uv").
+2. Python 3.10 because Jetson-compatible torch needs Python 3.10 (see above).
+3. Uninstall incompatible torch first, that got installed through requirements.txt, and then install a proper Jetson torch.
+
+```
+git clone https://github.com/Comfy-Org/ComfyUI.git
+cd ComfyUI/
+uv venv --python 3.10
+source .venv/bin/activate
+uv pip install -r requirements.txt
+uv pip uninstall torch torchvision 
+uv pip install torch torchvision torchaudio --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
+uv run main.py --listen
+```
+#### Install models to ComfyUI
+Taken from [Teachings/01-ComfyUISetup](https://github.com/Teachings/AIServerSetup/blob/main/05-Jetson%20Orin%20Nano%20Developer%20Kit/01-ComfyUISetup.md)
+
+1. Navigate to [civitai.com](https://civitai.com) and select a model. For example, you can choose the following model:
+
+   [RealVisionBabes v1.0](https://civitai.com/models/543456?modelVersionId=604282)
+
+2. Download the model file: [realvisionbabes_v10.safetensors](https://civitai.com/api/download/models/604282?type=Model&format=SafeTensor&size=pruned&fp=fp16)
+
+3. Place it inside the `models/checkpoints` folder.
+
+4. Download the VAE file: [ClearVAE_V2.3_fp16.pt](https://civitai.com/api/download/models/604282?type=VAE)
+
+5. Place it inside the `models/vae` folder.
+
+6. Download [workflow-api.json](https://github.com/Teachings/AIServerSetup/blob/main/05-Jetson%20Orin%20Nano%20Developer%20Kit/workflow-api.json) and drag'n'drop it to ComfyUI interface.
