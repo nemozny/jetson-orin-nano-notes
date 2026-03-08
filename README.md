@@ -122,8 +122,9 @@ Killed
 ... Error 137
 ```
 Error 137 is out of memory, the process was killed.
-*Do not do the mistake of interrupting the process! Wait until the process exits with error. The build can actually continue and build different parts of the library.
-After the process exited, start it again and eventually it should finish.*
+*Do not interrupt the process! Even if there were errors 137. Wait until the process fully exited. The build can actually continue with different parts of the library and skip the ones that were killed on out of memory.
+
+After the process exited with errors, start it again and eventually it should finish successfully.*
 
 If the process is stubborn and keeps breaking, you can try limiting parallelization:
 ```
@@ -143,6 +144,9 @@ Successfully installed llama_cpp_binaries-0.87.0
 ### Using llama-cpp-binaries in venv
 If you managed to build and install _llama-cpp-binaries_, another problem is that you need to somehow make it available to venv environment in _text-generation-webui_, because you cannot very well build in venv itself.
 You can manage this by enabling system-site packages to venv.
+
+DO NOT USE Python 3.11 or any other Python version in venv.
+Pytorch (further on) was compiled against Python 3.10 and will NOT work with Python 3.11.
 ```
 deactivate
 rm -rf venv
