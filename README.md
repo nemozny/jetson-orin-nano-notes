@@ -244,3 +244,36 @@ Taken from [Teachings/01-ComfyUISetup](https://github.com/Teachings/AIServerSetu
 5. Place it inside the `models/vae` folder.
 
 6. Download [workflow-api.json](https://github.com/Teachings/AIServerSetup/blob/main/05-Jetson%20Orin%20Nano%20Developer%20Kit/workflow-api.json) and drag'n'drop it to ComfyUI interface.
+
+&nbsp;
+
+## cuDF - GPU Accelerated pandas (RAPIDS)
+
+I have tried and failed many times, but ultimately this worked.
+The problem seemed to be with numpy version above 2.0, so that is why **"numpy<2.0"**. Also **cupy-cuda12x==14.0.1** did NOT work, but **cupy-cuda12x==13.6.0** did work with Jetson.
+
+```
+uv pip install \
+  --extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126 \
+  cudf-cu12 cupy-cuda12x "numpy<2.0"
+Resolved 38 packages in 32.57s
+Prepared 3 packages in 18.53s
+Uninstalled 1 package in 82ms
+Installed 3 packages in 69ms
+ + cudf-cu12==25.12.0
+ - cupy-cuda12x==14.0.1
+ + cupy-cuda12x==13.6.0
+ + fastrlock==0.8.3
+```
+Also make sure you haven't installed any libraries prior to this.
+
+This will build proper libraries and you will avoid these errors
+```
+Failed to import CuPy.
+
+If you installed CuPy via wheels (cupy-cudaXXX or cupy-rocm-X-X), make sure that the package matches with the version of CUDA or ROCm
+installed.
+
+On Linux, you may need to set LD_LIBRARY_PATH environment variable depending on how you installed CUDA/ROCm.
+On Windows, try setting CUDA_PATH environment variable.
+```
