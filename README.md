@@ -249,8 +249,28 @@ Taken from [Teachings/01-ComfyUISetup](https://github.com/Teachings/AIServerSetu
 
 ## cuDF - GPU Accelerated pandas (RAPIDS)
 
-I have tried and failed many times, but ultimately this worked.
-The problem seemed to be with numpy version above 2.0, so that is why **"numpy<2.0"**. Also **cupy-cuda12x==14.0.1** did NOT work, but **cupy-cuda12x==13.6.0** did work with Jetson.
+Following the official RAPIDS guide I ran into these issues
+```
+Failed to import CuPy.
+
+If you installed CuPy via wheels (cupy-cudaXXX or cupy-rocm-X-X), make sure that the package matches with the version of CUDA or ROCm
+installed.
+
+On Linux, you may need to set LD_LIBRARY_PATH environment variable depending on how you installed CUDA/ROCm.
+On Windows, try setting CUDA_PATH environment variable.
+```
+
+I have tried to install cuDF many times, but ultimately this worked.
+First of all avoid installing new Python versions (3.14 etc). Preferably use version 3.11.
+```
+uv venv --python 3.11
+```
+Or 
+```
+uv python pin 3.11
+```
+
+Then the "Failed to import CuPy" problem seemed to be with numpy version over 2.0, so that is why to install **"numpy<2.0"**. Also **cupy-cuda12x==14.0.1** did NOT work, but **cupy-cuda12x==13.6.0** did work with Jetson.
 
 ```
 uv pip install \
@@ -266,14 +286,3 @@ Installed 3 packages in 69ms
  + fastrlock==0.8.3
 ```
 Also make sure you haven't installed any libraries prior to this.
-
-This will build proper libraries and you will avoid these errors
-```
-Failed to import CuPy.
-
-If you installed CuPy via wheels (cupy-cudaXXX or cupy-rocm-X-X), make sure that the package matches with the version of CUDA or ROCm
-installed.
-
-On Linux, you may need to set LD_LIBRARY_PATH environment variable depending on how you installed CUDA/ROCm.
-On Windows, try setting CUDA_PATH environment variable.
-```
