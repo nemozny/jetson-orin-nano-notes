@@ -275,7 +275,7 @@ Then the "Failed to import CuPy" problem seemed to be with numpy version over 2.
 ```
 uv pip install \
   --extra-index-url https://pypi.jetson-ai-lab.io/jp6/cu126 \
-  cudf-cu12 cupy-cuda12x "numpy<2.0"
+  cudf-cu12 cupy-cuda12x "numpy<2.0" "numba==0.59.*"
 Resolved 38 packages in 32.57s
 Prepared 3 packages in 18.53s
 Uninstalled 1 package in 82ms
