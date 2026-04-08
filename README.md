@@ -247,6 +247,28 @@ Taken from [Teachings/01-ComfyUISetup](https://github.com/Teachings/AIServerSetu
 
 &nbsp;
 
+## Ollama
+Install ollama
+```
+curl -fsSL https://ollama.com/install.sh | sh
+```
+Then you can do
+```
+# Download a model
+ollama pull gemma2:2b
+
+# List all your models
+ollama list
+
+# Remove a model
+ollama rm gemma2:2b
+
+# Update a model
+ollama pull gemma2:2b
+```
+
+&nbsp;
+
 ## Langflow
 
 Create directory that is NOT called "langflow", to avoid conflict with the package.
