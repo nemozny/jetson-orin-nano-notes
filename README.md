@@ -247,7 +247,34 @@ Taken from [Teachings/01-ComfyUISetup](https://github.com/Teachings/AIServerSetu
 
 &nbsp;
 
+## Langflow
+
+Create directory that is NOT called "langflow", to avoid conflict with the package.
+Contrary to oficial guide I installed langflow as package, not using "uv pip", otherwise it produced errors.
+The official guide says *Python version 3.10 to 3.13*, so that's what we need to do.
+
+```
+mkdir my-langflow
+cd my-langflow
+uv init --python 3.13
+uv venv --python 3.13
+uv add langflow
+```
+This will install langflow as regular package to your project.
+Now start langflow locally (on localhost only) with
+```
+uv run langflow run
+```
+Or on all interfaces with
+```
+uv run langflow run --host 0.0.0.0 --port 7860
+```
+
+&nbsp;
+
 ## cuDF - GPU Accelerated pandas (RAPIDS)
+
+(After successful install it produced a bunch of errors, I gave up)
 
 Following the official RAPIDS guide I ran into these issues
 ```
