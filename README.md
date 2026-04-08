@@ -252,6 +252,16 @@ Install ollama
 ```
 curl -fsSL https://ollama.com/install.sh | sh
 ```
+There is no built-in search argument, but to search for available *"gemma"* models you can do
+```
+curl -s https://ollama.com/api/tags | grep -o '"gemma[^"]*"' | tr -d '"' | sort -u
+
+gemma3:12b
+gemma3:27b
+gemma3:4b
+gemma4:31b
+```
+
 Then you can do
 ```
 # Download a model
